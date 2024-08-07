@@ -1,5 +1,5 @@
 {
-  "type" : "module",
+  "type": "module",
   "name": "kanbas-node-server-app",
   "version": "1.0.0",
   "description": "Node.js HTTP web server for kanbas",
@@ -17,6 +17,7 @@
   "author": "Spec-DY",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.19.2"
   }
 }

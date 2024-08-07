@@ -1,5 +1,5 @@
 const assignment = {
-    id: 1, title: "NodeJS Assignment",
+    id: 1, title: "NodeJS Assignmentasadasd",
     description: "Create a NodeJS server with ExpressJS",
     due: "2021-10-10", completed: false, score: 0,
   };
