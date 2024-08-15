@@ -5,7 +5,7 @@ export default function CourseRoutes(app) {
 
   app.put("/api/courses/:id", async (req, res) => {
     const { id } = req.params;
-    const courseId = mongoose.Types.ObjectId(id);
+    const courseId = new mongoose.Types.ObjectId(id);
     const course = req.body;
     await courseDao.updateCourse(courseId, course);
     res.sendStatus(204);
@@ -13,7 +13,7 @@ export default function CourseRoutes(app) {
 
   app.delete("/api/courses/:id", async (req, res) => {
     const { id } = req.params;
-    const courseId = mongoose.Types.ObjectId(id);
+    const courseId =new mongoose.Types.ObjectId(id);
     await courseDao.deleteCourse(courseId);
     res.sendStatus(200);
   });
