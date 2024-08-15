@@ -5,11 +5,15 @@ export default function ModuleRoutes(app) {
 
   app.put("/api/courses/:cid/modules/:mid", async (req, res) => {
     try {
+      console.log("start");
       const { cid, mid } = req.params;
-      const moduleId = new mongoose.Types.ObjectId(mid);  // 这里应该是 ObjectId
+      console.log("const cid is:", cid);
+      console.log("const mid is:", mid);
+      const moduleId = new mongoose.Types.ObjectId(mid);
+      console.log("set moduleid:", moduleId);
       const updatedModule = req.body;
   
-      console.log("Updating module with ID:", moduleId);  // 打印调试信息
+      console.log("Updating module with ID:", moduleId);
       await moduleDao.updateModule(moduleId, updatedModule);
       res.sendStatus(204);
     } catch (error) {
@@ -46,9 +50,12 @@ export default function ModuleRoutes(app) {
         course: courseId
       };
       const createdModule = await moduleDao.createModule(newModule);
+      console.log("const cid is:", cid);
+      console.log("moduleid:", createdModule);
       res.send(createdModule);
     } catch (error) {
       res.status(500).send(error.message);
+      console.log("error post: ", error.message);
     }
   });
 
