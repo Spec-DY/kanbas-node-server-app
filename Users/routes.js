@@ -71,14 +71,20 @@ export default function UserRoutes(app) {
   const signup = async (req, res) => {
     const user = await dao.findUserByUsername(req.body.username);
     if (user) {
-      res.status(400).json(
-        { message: "Username already taken" });
+      res.status(400).json({ message: "Username already taken" });
       return;
     }
+  
+    // make sire role is "FACULTY" or "STUDENT"
+    const { role } = req.body;
+    if (role !== "FACULTY" && role !== "STUDENT") {
+      res.status(400).json({ message: "Invalid role" });
+      return;
+    }
+  
     const currentUser = await dao.createUser(req.body);
     req.session["currentUser"] = currentUser;
     res.json(currentUser);
-
   };
 
   const signout = (req, res) => {

@@ -23,9 +23,10 @@ export default function CourseRoutes(app) {
 
   // Create a new course and associate it with the faculty member who created it
   app.post("/api/courses", async (req, res) => {
-    const { userId } = req.body; // Assuming the userId of the creator is passed in the request body
-    const course = { ...req.body, creator: userId };
-    const createdCourse = await courseDao.createCourse(course);
+    const { userId, ...courseData } = req.body; // get userid and course data
+
+    // create course and set author as current user
+    const createdCourse = await courseDao.createCourse({ ...courseData, author: userId });
 
     // Associate the course with the faculty member
     await userDao.addCreatedCourse(userId, createdCourse._id);
