@@ -43,4 +43,82 @@ export default function QuizRoutes(app) {
         const createdQuiz = await dao.createQuiz(newQuiz);
         res.status(201).json(createdQuiz);
     });
-}
+
+
+
+
+    app.post("/api/quizzes/:quizId/submit", async (req, res) => {
+        const { quizId } = req.params;
+        const { answers } = req.body;
+        const userId = req.session.currentUser._id;
+
+        try {
+            const user = await UserModel.findById(userId);
+            const quiz = await dao.findQuizById(quizId);
+
+            let quizAttempt = user.quizAttempts.find(
+                (attempt) => attempt.quizId.toString() === quizId
+            );
+
+            if (!quizAttempt) {
+                // Initialize quiz attempt
+                quizAttempt = {
+                    quizId: quizId,
+                    attemptsLeft: quiz.numberOfAttempts - 1,
+                    answers: [],
+                    score: 0,
+                    lastAttemptAt: new Date(),
+                };
+                user.quizAttempts.push(quizAttempt);
+            } else if (quizAttempt.attemptsLeft > 0) {
+                quizAttempt.attemptsLeft -= 1;
+                quizAttempt.lastAttemptAt = new Date();
+            } else {
+                return res.status(400).json({ message: "No attempts left." });
+            }
+
+            // Calculate score (implement your scoring logic here)
+            const score = calculateScore(quiz, answers); // This function needs to be implemented
+
+            // Update quiz attempt
+            quizAttempt.answers = answers;
+            quizAttempt.score = score;
+
+            await user.save();
+
+            res.json({ score, attemptsLeft: quizAttempt.attemptsLeft });
+        } catch (err) {
+            res.status(500).json({ message: "Error submitting quiz", error: err.message });
+        }
+    });
+
+    // New: Get the student's quiz attempt info
+    app.get("/api/quizzes/:quizId/attempts", async (req, res) => {
+        const { quizId } = req.params;
+        const userId = req.session.currentUser._id;
+
+        try {
+            const user = await UserModel.findById(userId);
+            const quizAttempt = user.quizAttempts.find(
+                (attempt) => attempt.quizId.toString() === quizId
+            );
+
+            if (quizAttempt) {
+                res.json({
+                    attemptsLeft: quizAttempt.attemptsLeft,
+                    score: quizAttempt.score,
+                    answers: quizAttempt.answers,
+                    lastAttemptAt: quizAttempt.lastAttemptAt,
+                });
+            } else {
+                res.json({ attemptsLeft: quiz.numberOfAttempts, score: null, answers: [] });
+            }
+        } catch (err) {
+            res.status(500).json({ message: "Error fetching quiz attempt info", error: err.message });
+        }
+    }
+
+
+)
+;}
+

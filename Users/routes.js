@@ -75,7 +75,7 @@ export default function UserRoutes(app) {
       return;
     }
   
-    // make sire role is "FACULTY" or "STUDENT"
+    // role is "FACULTY" or "STUDENT"
     const { role } = req.body;
     if (role !== "FACULTY" && role !== "STUDENT") {
       res.status(400).json({ message: "Invalid role" });
@@ -91,6 +91,28 @@ export default function UserRoutes(app) {
     req.session.destroy();
     res.sendStatus(200);
   };
+
+  const updateProfile = async (req, res) => {
+    const currentUser = req.session["currentUser"];
+    if (!currentUser) {
+      res.sendStatus(401);
+      return;
+    }
+    
+    const userId = currentUser._id; // Get user ID from session
+    const status = await dao.updateUser(userId, req.body);
+    
+    if (status.modifiedCount > 0) {
+      // Fetch the updated user data to refresh the session
+      const updatedUser = await dao.findUserById(userId);
+      req.session["currentUser"] = updatedUser;
+      res.json(updatedUser); // Send back the updated user data
+    } else {
+      res.status(400).json({ message: "Failed to update profile." });
+    }
+  };
+
+  app.put("/api/users/profile", updateProfile);
 
   app.get("/api/users", findAllUsers);
   app.get("/api/users/:userId", findUserById);

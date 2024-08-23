@@ -7,6 +7,14 @@ const userSchema = new mongoose.Schema({
     email: String,
     lastName: String,
     dob: Date,
+    quizAttempts: [
+      {
+        quizId: { type: mongoose.Schema.Types.ObjectId, ref: 'QuizModel' },
+        attemptsLeft: Number,
+        answers: [String],
+        score: Number,
+        lastAttemptAt: Date,
+      }],
     role: {
       type: String,
       enum: ["STUDENT", "FACULTY", "ADMIN", "USER"],
